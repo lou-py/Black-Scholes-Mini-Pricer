@@ -1,0 +1,73 @@
+"""
+black_scholes.py
+Minimal interactive Black-Scholes pricer for European options.
+Run:
+    python black_scholes.py
+"""
+
+import math
+from scipy.stats import norm  # standard normal CDF
+
+# Core helpers
+
+def _d1_d2(S: float, K: float, T: float, r: float, sigma: float, q: float = 0.0):
+    """Return d1 and d2 used in the Black-Scholes formula."""
+    d1 = (math.log(S / K) + (r - q + 0.5 * sigma**2) * T) / (sigma * math.sqrt(T))
+    d2 = d1 - sigma * math.sqrt(T)
+    return d1, d2
+
+
+def bs_price(S, K, T, r, sigma, option_type="call", q=0.0):
+    """Black-Scholes price for a European call or put."""
+    d1, d2 = _d1_d2(S, K, T, r, sigma, q)
+    if option_type.lower().startswith("c"):
+        return math.exp(-q * T) * S * norm.cdf(d1) - math.exp(-r * T) * K * norm.cdf(d2)
+    else:
+        return math.exp(-r * T) * K * norm.cdf(-d2) - math.exp(-q * T) * S * norm.cdf(-d1)
+
+
+def bs_delta(S, K, T, r, sigma, option_type="call", q=0.0):
+    """Delta of a European call or put."""
+    d1, _ = _d1_d2(S, K, T, r, sigma, q)
+    if option_type.lower().startswith("c"):
+        return math.exp(-q * T) * norm.cdf(d1)
+    else:
+        return math.exp(-q * T) * (norm.cdf(d1) - 1)
+
+# Simple I/O utilities
+
+def _ask_float(label: str, default=None):
+    """Prompt until the user enters a float (or presses Enter for default)."""
+    while True:
+        prompt = f"{label}" + (f" [{default}]" if default is not None else "") + ": "
+        raw = input(prompt).strip()
+        if raw == "" and default is not None:
+            return float(default)
+        try:
+            return float(raw)
+        except ValueError:
+            print("Invalid number, please try again.")
+
+# Main interactive script
+
+if __name__ == "__main__":
+    print("=== Black-Scholes mini-pricer ===")
+    print("(leave blank to accept defaults)\n")
+
+    S = _ask_float("Spot price S")
+    K = _ask_float("Strike K")
+    T = _ask_float("Maturity T (years)")
+    r = _ask_float("Risk-free rate r (e.g. 0.02)")
+    sigma = _ask_float("Volatility σ (e.g. 0.25)")
+    option_type = input("Option type (call/put) [call]: ").strip().lower() or "call"
+    q = _ask_float("Dividend yield q", default=0.0)
+
+    price = bs_price(S, K, T, r, sigma, option_type, q)
+    delta = bs_delta(S, K, T, r, sigma, option_type, q)
+
+    print("\n*** Result ***")
+    print(f"Option: {option_type.upper()}")
+    print(f"Price : {price:.4f}")
+    print(f"Delta : {delta:.4f}")
+
+    input("\nPress Enter to quit…")
