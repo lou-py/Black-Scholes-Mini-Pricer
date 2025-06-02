@@ -2,19 +2,19 @@
 Python script that prices European vanilla options with the Black‑Scholes model and outputs Delta. Very basic but a kind of training.
 Used formula from by books and knowledge
 
-#Installation
+# Installation
 
 python -m pip install --upgrade pip
 pip install scipy   # numpy will be installed automatically
 Python ≥ 3.9 recommended
 
-#Running the script
+# running the script
 
 python black_scholes.py
 
 The program will successively ask for the inputs listed below; just press Enter to re‑enter a value if you mistype.
 
-#Example 
+# Example 
 
 === Black-Scholes mini-pricer ===
 Spot price S: 100
