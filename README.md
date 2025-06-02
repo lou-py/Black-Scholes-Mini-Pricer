@@ -12,8 +12,7 @@ Python ≥ 3.9 recommended
 
 python black_scholes.py
 
-The program will successively ask for the inputs listed below; just press Enter to re‑enter a value if you mistype.
-
+The program will ask for the inputs listed below; just press enter 
 # Example 
 
 === Black-Scholes mini-pricer ===
